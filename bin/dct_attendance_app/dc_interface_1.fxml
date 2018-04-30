@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="749.0" prefWidth="1201.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dct_attendance_app.Attendance_Controller">
+   <children>
+      <ImageView fitHeight="749.0" fitWidth="94.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@dunwoody_letter_d_logo.png" />
+         </image>
+      </ImageView>
+      <Label layoutX="113.0" layoutY="14.0" prefHeight="50.0" prefWidth="482.0" text="Dunwoody Attendance Portal (DAP)">
+         <font>
+            <Font name="Tw Cen MT" size="33.0" />
+         </font>
+      </Label>
+      <Button fx:id="btn_display" layoutX="1088.0" layoutY="37.0" mnemonicParsing="false" onAction="#displayCourse" prefHeight="33.0" prefWidth="98.0" text="Display ">
+         <font>
+            <Font name="Tw Cen MT" size="18.0" />
+         </font>
+      </Button>
+      <TableView fx:id="five_percent_table" layoutX="755.0" layoutY="211.0" prefHeight="137.0" prefWidth="425.0">
+        <columns>
+          <TableColumn prefWidth="165.0" text="C1" />
+          <TableColumn prefWidth="75.0" text="C2" />
+        </columns>
+      </TableView>
+      <TableView fx:id="ten_percent_table" layoutX="755.0" layoutY="398.0" prefHeight="137.0" prefWidth="425.0">
+        <columns>
+          <TableColumn prefWidth="157.0" text="C1" />
+          <TableColumn prefWidth="84.0" text="C2" />
+        </columns>
+      </TableView>
+      <TableView fx:id="fifteen_percent_table" layoutX="755.0" layoutY="582.0" prefHeight="137.0" prefWidth="425.0">
+        <columns>
+          <TableColumn prefWidth="163.0" text="C1" />
+          <TableColumn prefWidth="81.0" text="C2" />
+        </columns>
+      </TableView>
+      <Label layoutX="755.0" layoutY="185.0" text="Student(s) in 5% threshold">
+         <font>
+            <Font name="Tw Cen MT Condensed Extra Bold" size="20.0" />
+         </font>
+      </Label>
+      <Label layoutX="755.0" layoutY="371.0" text="Student(s) in 10% threshold">
+         <font>
+            <Font name="Tw Cen MT Condensed Extra Bold" size="20.0" />
+         </font>
+      </Label>
+      <Label layoutX="755.0" layoutY="556.0" text="Student(s) in 15% threshold">
+         <font>
+            <Font name="Tw Cen MT Condensed Extra Bold" size="20.0" />
+         </font>
+      </Label>
+      <Label layoutX="630.0" layoutY="17.0" text="SELECT COURSE">
+         <font>
+            <Font name="Tw Cen MT Condensed Extra Bold" size="22.0" />
+         </font>
+      </Label>
+      <Label layoutX="770.0" layoutY="17.0" text="SECTION">
+         <font>
+            <Font name="Tw Cen MT Condensed Extra Bold" size="22.0" />
+         </font>
+      </Label>
+      <Label layoutX="856.0" layoutY="17.0" text="YEAR">
+         <font>
+            <Font name="Tw Cen MT Condensed Extra Bold" size="22.0" />
+         </font>
+      </Label>
+      <Label layoutX="958.0" layoutY="18.0" text="TERM">
+         <font>
+            <Font name="Tw Cen MT Condensed Extra Bold" size="22.0" />
+         </font>
+      </Label>
+      <Label layoutX="113.0" layoutY="60.0" text="Instructor:">
+         <font>
+            <Font name="Tw Cen MT" size="20.0" />
+         </font>
+      </Label>
+      <Label fx:id="instructor_name" layoutX="199.0" layoutY="60.0" text="Instructor">
+         <font>
+            <Font name="Tw Cen MT" size="20.0" />
+         </font>
+      </Label>
+      <ComboBox fx:id="dropdown_coursenames" layoutX="630.0" layoutY="43.0" prefHeight="25.0" prefWidth="125.0" style="-fx-background-color: #f2f2f2;" />
+      <ComboBox fx:id="dropdown_section" layoutX="770.0" layoutY="43.0" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #f2f2f2;" />
+      <ComboBox fx:id="dropdown_year" layoutX="856.0" layoutY="43.0" prefHeight="25.0" prefWidth="83.0" style="-fx-background-color: #f2f2f2;" />
+      <ComboBox fx:id="dropdown_term" layoutX="958.0" layoutY="43.0" prefHeight="25.0" prefWidth="113.0" style="-fx-background-color: #f2f2f2;" />
+      <Label layoutX="113.0" layoutY="527.0" text="Students who received emails">
+         <font>
+            <Font name="Tw Cen MT Condensed Extra Bold" size="20.0" />
+         </font>
+      </Label>
+      <TableView fx:id="email_table" layoutX="113.0" layoutY="551.0" prefHeight="169.0" prefWidth="608.0">
+        <columns>
+          <TableColumn prefWidth="75.0" text="C1" />
+          <TableColumn prefWidth="75.0" text="C2" />
+        </columns>
+      </TableView>
+      <Label layoutX="116.0" layoutY="306.0" text="All Students in course">
+         <font>
+            <Font name="Tw Cen MT Condensed Extra Bold" size="20.0" />
+         </font>
+      </Label>
+      <TableView fx:id="all_students_table" layoutX="113.0" layoutY="331.0" prefHeight="169.0" prefWidth="608.0">
+        <columns>
+          <TableColumn fx:id="table_col_name" prefWidth="245.0" text="Student " />
+          <TableColumn fx:id="table_col_hoursAttended" minWidth="4.0" prefWidth="137.0" text="Hours Attended" />
+            <TableColumn fx:id="table_col_hoursMissed" minWidth="4.0" prefWidth="109.0" text="Missed Hours" />
+            <TableColumn fx:id="table_col_percentAttended" minWidth="4.0" prefWidth="116.0" text="\% Attended" />
+        </columns>
+      </TableView>
+      <Pane layoutX="113.0" layoutY="137.0" prefHeight="158.0" prefWidth="608.0" style="-fx-background-color: #f2f2f2;">
+         <children>
+            <Label layoutX="203.0" layoutY="4.0" text="COURSE STATS:">
+               <font>
+                  <Font name="Tw Cen MT Condensed Extra Bold" size="36.0" />
+               </font>
+            </Label>
+            <Label layoutX="26.0" layoutY="58.0" text="TOTAL STUDENTS">
+               <font>
+                  <Font name="Tw Cen MT Condensed Extra Bold" size="20.0" />
+               </font>
+            </Label>
+            <Label layoutX="206.0" layoutY="57.0" text="5% COUNT">
+               <font>
+                  <Font name="Tw Cen MT Condensed Extra Bold" size="20.0" />
+               </font>
+            </Label>
+            <Label layoutX="333.0" layoutY="58.0" text="10% COUNT">
+               <font>
+                  <Font name="Tw Cen MT Condensed Extra Bold" size="20.0" />
+               </font>
+            </Label>
+            <Label layoutX="484.0" layoutY="57.0" text="15% COUNT">
+               <font>
+                  <Font name="Tw Cen MT Condensed Extra Bold" size="20.0" />
+               </font>
+            </Label>
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>
