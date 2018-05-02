@@ -14,14 +14,14 @@ public class Attendance_Roster {
     private final SimpleStringProperty name;
     private final SimpleStringProperty hoursAttended;
     private final SimpleStringProperty hoursMissed;
-    private final SimpleStringProperty percentAttended;
+    private final SimpleDoubleProperty percentAttended;
     //private final SimpleBooleanProperty isSent;
     
-    Attendance_Roster(String name, String hoursAttended, String hoursMissed, String percentAttended) {
+    Attendance_Roster(String name, String hoursAttended, String hoursMissed, Double percentAttended) {
         this.name = new SimpleStringProperty(name); 
         this.hoursAttended = new SimpleStringProperty(hoursAttended);
         this.hoursMissed = new SimpleStringProperty(hoursMissed);
-        this.percentAttended = new SimpleStringProperty(percentAttended);
+        this.percentAttended = new SimpleDoubleProperty(percentAttended);
         
 
         
@@ -73,15 +73,15 @@ public class Attendance_Roster {
 
     
     
-    public void setPercentAttended(String pAttended) {
+    public void setPercentAttended(double pAttended) {
         percentAttended.set(pAttended);
     }
 
-    public String getPercentAttended() {
+    public Double getPercentAttended() {
         return percentAttended.get();
     }
     
-    public StringProperty percentAttendedProperty() {
+    public DoubleProperty percentAttendedProperty() {
         return percentAttended;
     }
     

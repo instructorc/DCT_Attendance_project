@@ -26,6 +26,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.SingleSelectionModel;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
@@ -37,16 +38,54 @@ public class Attendance_Controller {
     private Button btn_display;
 
     @FXML
-    private TableView<?> five_percent_table;
+    private TableView<Attendance_Roster> five_percent_table;
+    
+	    @FXML
+	    private TableColumn<Attendance_Roster, String> table_col_name_five;
+	
+	    @FXML
+	    private TableColumn<Attendance_Roster, String> table_col_hoursMissed_five;
+	
+	    @FXML
+	    private TableColumn<Attendance_Roster, Number> table_col_percentAttended_five;
 
     @FXML
-    private TableView<?> ten_percent_table;
+    private TableView<Attendance_Roster> ten_percent_table;
+    
+	    @FXML
+	    private TableColumn<Attendance_Roster, String> table_col_name_ten;
+	
+	    @FXML
+	    private TableColumn<Attendance_Roster, String> table_col_hoursMissed_ten;
+	
+	    @FXML
+	    private TableColumn<Attendance_Roster, Double> table_col_percentAttended_ten;
 
     @FXML
-    private TableView<?> fifteen_percent_table;
+    private TableView<Attendance_Roster> fifteen_percent_table;
+    
+	    @FXML
+	    private TableColumn<Attendance_Roster, String> table_col_name_fifteen;
+	
+	    @FXML
+	    private TableColumn<Attendance_Roster, String> table_col_hoursMissed_fifteen;
+	
+	    @FXML
+	    private TableColumn<Attendance_Roster, Double> table_col_percentAttended_fifteen;
     
     @FXML
-    private TableView<?> email_table;
+    private TableView<Attendance_Roster> email_table;
+	    @FXML
+	    private TableColumn<Attendance_Roster, String> table_col_name_email;
+	
+	    @FXML
+	    private TableColumn<Attendance_Roster, String> table_col_hoursAttended_email;
+	
+	    @FXML
+	    private TableColumn<Attendance_Roster, String> table_col_hoursMissed_email;
+	
+	    @FXML
+	    private TableColumn<Attendance_Roster, Number> table_col_percentAttended_email;
 
     @FXML
     private TableView<Attendance_Roster> all_students_table;
@@ -60,7 +99,7 @@ public class Attendance_Controller {
 	    private TableColumn<Attendance_Roster,String> table_col_hoursMissed;
 	
 	    @FXML
-	    private TableColumn<Attendance_Roster,String> table_col_percentAttended;
+	    private TableColumn<Attendance_Roster,Number> table_col_percentAttended;
 
     @FXML
     private ComboBox<String> dropdown_coursenames;
@@ -77,14 +116,27 @@ public class Attendance_Controller {
     @FXML
     private Label instructor_name;
     
+    @FXML
+    private Label label_total_student_count;
 
+    @FXML
+    private Label label_five_count;
+
+    @FXML
+    private Label label_ten_count;
+
+    @FXML
+    private Label label_fifteen_count;
+    
+    @FXML
+    private Button send_email;
     
     @FXML
     void displayCourse(ActionEvent event) throws IOException {
     	//Declaring variables
     	String name, hoursAttended, hoursMissed,percentAttended;
     	ObservableList<Attendance_Roster> studentList = FXCollections.observableArrayList();
-    	
+    	ObservableList<Attendance_Roster> five_list = FXCollections.observableArrayList();
     	
 
     	
@@ -95,6 +147,7 @@ public class Attendance_Controller {
     	table_col_hoursAttended.setCellValueFactory(cellData -> cellData.getValue().hoursAttendedProperty());        
     	table_col_hoursMissed.setCellValueFactory(cellData -> cellData.getValue().hoursMissedProperty());
     	table_col_percentAttended.setCellValueFactory(cellData -> cellData.getValue().percentAttendedProperty());
+    	
 
     	String alteredCourseName = dropdown_coursenames.getValue().substring(0, 8);
     	System.out.println(alteredCourseName);
@@ -113,13 +166,41 @@ public class Attendance_Controller {
 			hoursAttended = row.child(1).text();
 			hoursMissed = row.child(2).text();
 			percentAttended = row.child(3).text();
-			String ap = percentAttended.replace("%"," ");
-			System.out.println(ap);
-			 studentList.add(new Attendance_Roster(name,hoursAttended, hoursMissed, percentAttended));
+			String ap = percentAttended.replace("%","");
+			if(ap.equalsIgnoreCase("Withdrawn") || ap.equalsIgnoreCase("Dropped")) {
+				ap = "0";
+			}
+			double percentStripped = Double.parseDouble(ap);
+			
+			System.out.println(percentStripped);
+			 studentList.add(new Attendance_Roster(name,hoursAttended, hoursMissed, percentStripped));
 			 
 			 all_students_table.setItems(studentList);
+			 System.out.println(studentList.size());
+			 double value = studentList.size();
+			 String aValue = Double.toString(value);
+			 label_total_student_count.setText(aValue);
 			
-		}
+		} 
+		
+		studentList.forEach(x -> {
+			if(x.getPercentAttended() <= 72.00) {
+				five_list.add(x);
+				
+				
+			}else if(x.getPercentAttended() <= 87.00) {
+				ten_percent_table.setItems(studentList);
+			}else {
+				five_percent_table.setItems(studentList);
+			}
+		});
+		fifteen_percent_table.setItems(five_list);
+		
+		 // Initialize the Attendance Roster table 4 columns.
+    	table_col_name_five.setCellValueFactory(cellData -> cellData.getValue().nameProperty());        
+    	table_col_hoursMissed_five.setCellValueFactory(cellData -> cellData.getValue().hoursMissedProperty());
+    	table_col_percentAttended_five.setCellValueFactory(cellData -> cellData.getValue().percentAttendedProperty());
+
 	
     }
 
@@ -169,6 +250,10 @@ public class Attendance_Controller {
 		
 	}
  
+    @FXML
+    void sendEmail(ActionEvent event) {
+
+    }
     
     
     

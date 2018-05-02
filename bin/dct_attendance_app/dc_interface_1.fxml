@@ -23,27 +23,30 @@
             <Font name="Tw Cen MT" size="33.0" />
          </font>
       </Label>
-      <Button fx:id="btn_display" layoutX="1088.0" layoutY="37.0" mnemonicParsing="false" onAction="#displayCourse" prefHeight="33.0" prefWidth="98.0" text="Display ">
+      <Button fx:id="btn_display" layoutX="1088.0" layoutY="37.0" mnemonicParsing="false" onAction="#displayCourse" prefHeight="33.0" prefWidth="98.0" style="-fx-background-color: #AC182E;" text="DISPLAY" textFill="WHITE">
          <font>
-            <Font name="Tw Cen MT" size="18.0" />
+            <Font name="Tw Cen MT Condensed Extra Bold" size="18.0" />
          </font>
       </Button>
       <TableView fx:id="five_percent_table" layoutX="755.0" layoutY="211.0" prefHeight="137.0" prefWidth="425.0">
         <columns>
-          <TableColumn prefWidth="165.0" text="C1" />
-          <TableColumn prefWidth="75.0" text="C2" />
+          <TableColumn fx:id="table_col_name_five" prefWidth="165.0" text="Student" />
+          <TableColumn fx:id="table_col_hoursMissed_five" prefWidth="127.0" text="Missed Hours" />
+            <TableColumn fx:id="table_col_percentAttended_five" prefWidth="132.0" text="\% Attended" />
         </columns>
       </TableView>
       <TableView fx:id="ten_percent_table" layoutX="755.0" layoutY="398.0" prefHeight="137.0" prefWidth="425.0">
         <columns>
-          <TableColumn prefWidth="157.0" text="C1" />
-          <TableColumn prefWidth="84.0" text="C2" />
+          <TableColumn fx:id="table_col_name_ten" prefWidth="157.0" text="Student" />
+          <TableColumn fx:id="table_col_hoursMissed_ten" prefWidth="130.0" text="Missed Hours" />
+            <TableColumn fx:id="table_col_percentAttended_ten" prefWidth="137.0" text="\% Attended" />
         </columns>
       </TableView>
       <TableView fx:id="fifteen_percent_table" layoutX="755.0" layoutY="582.0" prefHeight="137.0" prefWidth="425.0">
         <columns>
-          <TableColumn prefWidth="163.0" text="C1" />
-          <TableColumn prefWidth="81.0" text="C2" />
+          <TableColumn fx:id="table_col_name_fifteen" prefWidth="169.0" text="Student" />
+          <TableColumn fx:id="table_col_hoursMissed_fifteen" prefWidth="133.0" text="Missed Hours" />
+            <TableColumn fx:id="table_col_percentAttended_fifteen" prefWidth="122.0" text="\% Attended" />
         </columns>
       </TableView>
       <Label layoutX="755.0" layoutY="185.0" text="Student(s) in 5% threshold">
@@ -102,8 +105,10 @@
       </Label>
       <TableView fx:id="email_table" layoutX="113.0" layoutY="551.0" prefHeight="169.0" prefWidth="608.0">
         <columns>
-          <TableColumn prefWidth="75.0" text="C1" />
-          <TableColumn prefWidth="75.0" text="C2" />
+          <TableColumn fx:id="table_col_name_email" prefWidth="240.0" text="Student" />
+          <TableColumn fx:id="table_col_hoursAttended_email" minWidth="0.0" prefWidth="140.0" text="Hours Attended" />
+            <TableColumn fx:id="table_col_hoursMissed_email" minWidth="0.0" prefWidth="107.0" text="Missed Hours" />
+            <TableColumn fx:id="table_col_percentAttended_email" minWidth="0.0" prefWidth="120.0" text="\% Attended" />
         </columns>
       </TableView>
       <Label layoutX="116.0" layoutY="306.0" text="All Students in course">
@@ -121,7 +126,7 @@
       </TableView>
       <Pane layoutX="113.0" layoutY="137.0" prefHeight="158.0" prefWidth="608.0" style="-fx-background-color: #f2f2f2;">
          <children>
-            <Label layoutX="203.0" layoutY="4.0" text="COURSE STATS:">
+            <Label layoutX="110.0" layoutY="5.0" text="COURSE ATTENDANCE STATS:">
                <font>
                   <Font name="Tw Cen MT Condensed Extra Bold" size="36.0" />
                </font>
@@ -144,6 +149,40 @@
             <Label layoutX="484.0" layoutY="57.0" text="15% COUNT">
                <font>
                   <Font name="Tw Cen MT Condensed Extra Bold" size="20.0" />
+               </font>
+            </Label>
+            <Label fx:id="label_total_student_count" layoutX="43.0" layoutY="81.0" text="17">
+               <font>
+                  <Font name="Tw Cen MT Condensed Extra Bold" size="62.0" />
+               </font>
+            </Label>
+            <Label fx:id="label_five_count" layoutX="227.0" layoutY="81.0" text="3">
+               <font>
+                  <Font name="Tw Cen MT Condensed Extra Bold" size="62.0" />
+               </font>
+            </Label>
+            <Label fx:id="label_ten_count" layoutX="357.0" layoutY="81.0" text="5">
+               <font>
+                  <Font name="Tw Cen MT Condensed Extra Bold" size="62.0" />
+               </font>
+            </Label>
+            <Label fx:id="label_fifteen_count" layoutX="511.0" layoutY="81.0" text="2">
+               <font>
+                  <Font name="Tw Cen MT Condensed Extra Bold" size="62.0" />
+               </font>
+            </Label>
+         </children>
+      </Pane>
+      <Pane layoutX="755.0" layoutY="111.0" prefHeight="67.0" prefWidth="425.0" style="-fx-background-color: #f2f2f2;">
+         <children>
+            <Button fx:id="send_email" layoutX="265.0" layoutY="13.0" mnemonicParsing="false" onAction="#sendEmail" prefHeight="45.0" prefWidth="152.0" style="-fx-background-color: #AC182E;" text="SEND EMAIL" textFill="WHITE">
+               <font>
+                  <Font name="Tw Cen MT Condensed Extra Bold" size="25.0" />
+               </font>
+            </Button>
+            <Label layoutX="3.0" layoutY="-2.0" prefHeight="67.0" prefWidth="254.0" text="Select a name  from one of the tables below to send email." wrapText="true">
+               <font>
+                  <Font name="Tw Cen MT" size="20.0" />
                </font>
             </Label>
          </children>
