@@ -87,26 +87,6 @@ public class Attendance_Roster {
         return percentAttended;
     }
 
-	
-    
-    
-    
-    
-   /* public void setIsSent(boolean isEmailSent) {
-        isSent.set(isEmailSent);
-    }
 
-    public Boolean getIsSent() {
-        return isSent.get();
-    }
-    
-    public BooleanProperty isSentProperty() {
-        return isSent;
-    }*/
-    
-    
-
-    
-    
 
 }

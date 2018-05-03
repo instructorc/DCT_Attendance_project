@@ -50,7 +50,7 @@ import javafx.scene.paint.Color;
 public class Attendance_Controller {
 	String alteredCourseName;
 	private static final String USERNAME = "profifty_admin20";
-	private static final String PASSWORD = "34#1Chris!";
+	private static final String PASSWORD = "########";
 	private static final String CONN_STRING = "jdbc:mysql://184.154.73.76/profifty_dctattendance";
 
     @FXML
@@ -243,12 +243,7 @@ public class Attendance_Controller {
 		 fifteen_percent_table.setItems(fifteen_list);
 		 ten_percent_table.setItems(ten_list);
 		 five_percent_table.setItems(five_list);
-		
-		 //Redundant, but use of Streams
-		
-			/*studentList.stream().filter(x->x.getPercentAttended() <= 72.00).forEach(x ->fifteen_percent_table.setItems(studentList));
-			studentList.stream().filter(x->x.getPercentAttended() <= 87.00).forEach(x -> ten_percent_table.setItems(studentList));
-			studentList.stream().filter(x->x.getPercentAttended() <= 92.00).forEach(x -> five_percent_table.setItems(studentList));*/
+
 		
 
 
@@ -337,6 +332,10 @@ public class Attendance_Controller {
     void sendEmail(ActionEvent event) throws SQLException {
     	
     	String level;
+    	Connection conn = null;
+		
+		Statement stmt = null;
+		ResultSet results = null;
     	Attendance_Roster selectedStudent;
     	if(five_percent_table.getSelectionModel().getSelectedItem() != null) {
     		selectedStudent = five_percent_table.getSelectionModel().getSelectedItem();
@@ -352,23 +351,6 @@ public class Attendance_Controller {
     		level = "fifteen level";
     	}
 
-    	
-
-    	
-    	/*Attendance_Roster rowSelection_five = five_percent_table.getSelectionModel().getSelectedItem();
-    	Attendance_Roster rowSelection_ten = ten_percent_table.getSelectionModel().getSelectedItem();
-    	Attendance_Roster rowSelection_fifteen = fifteen_percent_table.getSelectionModel().getSelectedItem();
-    	System.out.println(rowSelection_five.getName());
-    	System.out.println(rowSelection_ten.getName());
-    	System.out.println(rowSelection_fifteen.getName());*/
-    	
-    	
-    	Connection conn = null;
-		
-		Statement stmt = null;
-		ResultSet results = null;
-
-		
 		try {
 			conn = DriverManager.getConnection(CONN_STRING, USERNAME, PASSWORD);
 			System.out.println("Connected!");
@@ -393,12 +375,7 @@ public class Attendance_Controller {
 			System.out.println("Records Inserted");
 			send_email.setText("EMAIL SENT");
 			send_email.setTextFill(Color.AQUAMARINE);
-			
-			
 
-			
-			
-			//RosterData.displayData(results);
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
