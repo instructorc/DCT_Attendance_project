@@ -1,5 +1,7 @@
 package dct_attendance_app;
 
+import org.jsoup.nodes.Node;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -84,6 +86,8 @@ public class Attendance_Roster {
     public DoubleProperty percentAttendedProperty() {
         return percentAttended;
     }
+
+	
     
     
     

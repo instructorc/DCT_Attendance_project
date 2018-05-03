@@ -1,12 +1,22 @@
 package dct_attendance_app;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -14,6 +24,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 
+
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -29,10 +42,16 @@ import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+
 
 public class Attendance_Controller {
-
-
+	String alteredCourseName;
+	private static final String USERNAME = "profifty_admin20";
+	private static final String PASSWORD = "34#1Chris!";
+	private static final String CONN_STRING = "jdbc:mysql://184.154.73.76/profifty_dctattendance";
 
     @FXML
     private Button btn_display;
@@ -59,7 +78,7 @@ public class Attendance_Controller {
 	    private TableColumn<Attendance_Roster, String> table_col_hoursMissed_ten;
 	
 	    @FXML
-	    private TableColumn<Attendance_Roster, Double> table_col_percentAttended_ten;
+	    private TableColumn<Attendance_Roster, Number> table_col_percentAttended_ten;
 
     @FXML
     private TableView<Attendance_Roster> fifteen_percent_table;
@@ -71,7 +90,7 @@ public class Attendance_Controller {
 	    private TableColumn<Attendance_Roster, String> table_col_hoursMissed_fifteen;
 	
 	    @FXML
-	    private TableColumn<Attendance_Roster, Double> table_col_percentAttended_fifteen;
+	    private TableColumn<Attendance_Roster, Number> table_col_percentAttended_fifteen;
     
     @FXML
     private TableView<Attendance_Roster> email_table;
@@ -131,16 +150,17 @@ public class Attendance_Controller {
     @FXML
     private Button send_email;
     
+
+    
     @FXML
     void displayCourse(ActionEvent event) throws IOException {
     	//Declaring variables
     	String name, hoursAttended, hoursMissed,percentAttended;
+    	
     	ObservableList<Attendance_Roster> studentList = FXCollections.observableArrayList();
     	ObservableList<Attendance_Roster> five_list = FXCollections.observableArrayList();
-    	
-
-    	
-    	
+    	ObservableList<Attendance_Roster> ten_list = FXCollections.observableArrayList();
+    	ObservableList<Attendance_Roster> fifteen_list = FXCollections.observableArrayList();
     	
         // Initialize the Attendance Roster table 4 columns.
     	table_col_name.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
@@ -148,8 +168,29 @@ public class Attendance_Controller {
     	table_col_hoursMissed.setCellValueFactory(cellData -> cellData.getValue().hoursMissedProperty());
     	table_col_percentAttended.setCellValueFactory(cellData -> cellData.getValue().percentAttendedProperty());
     	
-
-    	String alteredCourseName = dropdown_coursenames.getValue().substring(0, 8);
+    	// Initialize the Attendance Roster email table 4 columns.
+    	table_col_name_email.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+    	table_col_hoursAttended_email.setCellValueFactory(cellData -> cellData.getValue().hoursAttendedProperty());        
+    	table_col_hoursMissed_email.setCellValueFactory(cellData -> cellData.getValue().hoursMissedProperty());
+    	table_col_percentAttended_email.setCellValueFactory(cellData -> cellData.getValue().percentAttendedProperty());
+    	
+		 // Initialize the five percent roster table 3 columns.
+    	table_col_name_five.setCellValueFactory(cellData -> cellData.getValue().nameProperty());        
+    	table_col_hoursMissed_five.setCellValueFactory(cellData -> cellData.getValue().hoursMissedProperty());
+    	table_col_percentAttended_five.setCellValueFactory(cellData -> cellData.getValue().percentAttendedProperty());
+    	
+		 // Initialize the ten percent roster table 3 columns.
+    	table_col_name_ten.setCellValueFactory(cellData -> cellData.getValue().nameProperty());        
+    	table_col_hoursMissed_ten.setCellValueFactory(cellData -> cellData.getValue().hoursMissedProperty());
+    	table_col_percentAttended_ten.setCellValueFactory(cellData -> cellData.getValue().percentAttendedProperty());
+    	
+		 // Initialize the five percent roster table 3 columns.
+    	table_col_name_fifteen.setCellValueFactory(cellData -> cellData.getValue().nameProperty());        
+    	table_col_hoursMissed_fifteen.setCellValueFactory(cellData -> cellData.getValue().hoursMissedProperty());
+    	table_col_percentAttended_fifteen.setCellValueFactory(cellData -> cellData.getValue().percentAttendedProperty());
+        
+    	
+    	alteredCourseName = dropdown_coursenames.getValue().substring(0, 8);
     	System.out.println(alteredCourseName);
     	
     	SingleSelectionModel<String> course = dropdown_coursenames.getSelectionModel();
@@ -157,9 +198,8 @@ public class Attendance_Controller {
     	
     	Document doc = Jsoup.connect("https://staff.dunwoody.edu/x/IIS/Attendance/CourseAttendance.aspx?event_id=" +alteredCourseName+"&section_id="+ dropdown_section.getValue()+"&year="+dropdown_year.getValue()+ "&term="+ dropdown_term.getValue()).get();
 
-		
+		//Target the parent table and scrap children element data
 		Elements AttendanceInfo = doc.select("tbody").first().children();
-		//System.out.println(AttendanceInfo.text());
 
 		for(Element row : AttendanceInfo.subList(3,  AttendanceInfo.size())) {
 			name = row.child(0).text();
@@ -169,39 +209,71 @@ public class Attendance_Controller {
 			String ap = percentAttended.replace("%","");
 			if(ap.equalsIgnoreCase("Withdrawn") || ap.equalsIgnoreCase("Dropped")) {
 				ap = "0";
+			}else {
+				double percentStripped = Double.parseDouble(ap);
+	
+				if(percentStripped <= 84.00 ) {
+					fifteen_list.add(new Fifteen_Percent_Student(name,hoursAttended, hoursMissed, percentStripped));
+			
+				}else if(percentStripped <= 89.00) {
+					ten_list.add(new Fifteen_Percent_Student(name,hoursAttended, hoursMissed, percentStripped));
+				}else if (percentStripped <= 94.00){
+					five_list.add(new Fifteen_Percent_Student(name,hoursAttended, hoursMissed, percentStripped));
+				}else {
+					studentList.add( new Attendance_Roster(name,hoursAttended, hoursMissed, percentStripped));
+				}
 			}
-			double percentStripped = Double.parseDouble(ap);
-			
-			System.out.println(percentStripped);
-			 studentList.add(new Attendance_Roster(name,hoursAttended, hoursMissed, percentStripped));
-			 
-			 all_students_table.setItems(studentList);
-			 System.out.println(studentList.size());
-			 double value = studentList.size();
-			 String aValue = Double.toString(value);
-			 label_total_student_count.setText(aValue);
-			
+
 		} 
 		
-		studentList.forEach(x -> {
-			if(x.getPercentAttended() <= 72.00) {
-				five_list.add(x);
-				
-				
-			}else if(x.getPercentAttended() <= 87.00) {
-				ten_percent_table.setItems(studentList);
-			}else {
-				five_percent_table.setItems(studentList);
-			}
-		});
-		fifteen_percent_table.setItems(five_list);
+		 
+		//Set the value to display count for each table
+		 label_total_student_count.setText(Integer.toString(studentList.size()));
+		 label_five_count.setText(Integer.toString(five_list.size()));
+		 label_ten_count.setText(Integer.toString(ten_list.size()));
+		 label_fifteen_count.setText(Integer.toString(fifteen_list.size()));
+			//Set count labels to display when program starts
+		 label_total_student_count.setVisible(true);
+		 label_five_count.setVisible(true);
+		 label_ten_count.setVisible(true);
+		 label_fifteen_count.setVisible(true);
+		 
+		 //Set the list to display in for various table
+		 all_students_table.setItems(studentList);
+		 fifteen_percent_table.setItems(fifteen_list);
+		 ten_percent_table.setItems(ten_list);
+		 five_percent_table.setItems(five_list);
 		
-		 // Initialize the Attendance Roster table 4 columns.
-    	table_col_name_five.setCellValueFactory(cellData -> cellData.getValue().nameProperty());        
-    	table_col_hoursMissed_five.setCellValueFactory(cellData -> cellData.getValue().hoursMissedProperty());
-    	table_col_percentAttended_five.setCellValueFactory(cellData -> cellData.getValue().percentAttendedProperty());
+		 //Redundant, but use of Streams
+		
+			/*studentList.stream().filter(x->x.getPercentAttended() <= 72.00).forEach(x ->fifteen_percent_table.setItems(studentList));
+			studentList.stream().filter(x->x.getPercentAttended() <= 87.00).forEach(x -> ten_percent_table.setItems(studentList));
+			studentList.stream().filter(x->x.getPercentAttended() <= 92.00).forEach(x -> five_percent_table.setItems(studentList));*/
+		
 
-	
+
+	    	five_percent_table.setOnMouseClicked((MouseEvent event1) -> {
+	            if(event1.getButton().equals(MouseButton.PRIMARY)){
+	            	ten_percent_table.getSelectionModel().clearSelection();
+		    		fifteen_percent_table.getSelectionModel().clearSelection();
+	                System.out.println(five_percent_table.getSelectionModel().getSelectedItem());
+	            }
+	        });
+	    	ten_percent_table.setOnMouseClicked((MouseEvent event2) -> {
+	            if(event2.getButton().equals(MouseButton.PRIMARY)){
+	            	five_percent_table.getSelectionModel().clearSelection();
+		    		fifteen_percent_table.getSelectionModel().clearSelection();
+	                System.out.println(ten_percent_table.getSelectionModel().getSelectedItem());
+	            }
+	    	});
+	    	fifteen_percent_table.setOnMouseClicked((MouseEvent event3) -> {
+	            if(event3.getButton().equals(MouseButton.PRIMARY)){
+	            	ten_percent_table.getSelectionModel().clearSelection();
+		    		five_percent_table.getSelectionModel().clearSelection();
+	                System.out.println(fifteen_percent_table.getSelectionModel().getSelectedItem());
+	            }
+	        });
+	        
     }
 
 	public void initialize() throws IOException {
@@ -221,6 +293,11 @@ public class Attendance_Controller {
 		dropdown_coursenames.getItems().addAll(courseNames.text().split(" "));
 		dropdown_coursenames.getSelectionModel().select(courseNames.text().split(" ")[0]);
 		
+		//Set count labels to not display when program starts
+		 label_total_student_count.setVisible(false);
+		 label_five_count.setVisible(false);
+		 label_ten_count.setVisible(false);
+		 label_fifteen_count.setVisible(false);
 		
 		//Gets all the available terms
 		Elements terms = faculty_overview_doc.getElementsByAttributeValue("id", "ContentPlaceHolder1_TermDropDownList").first().children();
@@ -249,10 +326,96 @@ public class Attendance_Controller {
 		
 		
 	}
- 
+	/**
+	 * 
+	 * 
+	 * Send email and commit user to database
+	 * @param event
+	 * @throws SQLException 
+	 */
     @FXML
-    void sendEmail(ActionEvent event) {
+    void sendEmail(ActionEvent event) throws SQLException {
+    	
+    	String level;
+    	Attendance_Roster selectedStudent;
+    	if(five_percent_table.getSelectionModel().getSelectedItem() != null) {
+    		selectedStudent = five_percent_table.getSelectionModel().getSelectedItem();
+    		level = "five level";
+    		System.out.println(selectedStudent.getName());
+    	}else if(ten_percent_table.getSelectionModel().getSelectedItem() != null) {
+    		selectedStudent = ten_percent_table.getSelectionModel().getSelectedItem();
+    		level = "ten level";
+    		System.out.println(selectedStudent.getName());
+    	}else {
+    		selectedStudent = fifteen_percent_table.getSelectionModel().getSelectedItem();
+    		System.out.println(selectedStudent.getName());
+    		level = "fifteen level";
+    	}
 
+    	
+
+    	
+    	/*Attendance_Roster rowSelection_five = five_percent_table.getSelectionModel().getSelectedItem();
+    	Attendance_Roster rowSelection_ten = ten_percent_table.getSelectionModel().getSelectedItem();
+    	Attendance_Roster rowSelection_fifteen = fifteen_percent_table.getSelectionModel().getSelectedItem();
+    	System.out.println(rowSelection_five.getName());
+    	System.out.println(rowSelection_ten.getName());
+    	System.out.println(rowSelection_fifteen.getName());*/
+    	
+    	
+    	Connection conn = null;
+		
+		Statement stmt = null;
+		ResultSet results = null;
+
+		
+		try {
+			conn = DriverManager.getConnection(CONN_STRING, USERNAME, PASSWORD);
+			System.out.println("Connected!");
+			stmt = conn.createStatement();
+
+			String sql = "INSERT INTO ATTENDANCE_EMAILS (studentName, hoursAttended, missedHours, percentAttended, sentLevel, courseName, courseSection, courseTerm, courseYear, date)" +
+			        "VALUES (?, ?,?,?,?,?,?,?,?,?)";
+			PreparedStatement preparedStatement = conn.prepareStatement(sql);
+			
+			preparedStatement.setString(1, selectedStudent.getName());
+			preparedStatement.setString(2, selectedStudent.getHoursAttended());
+			preparedStatement.setString(3, selectedStudent.getHoursMissed());
+			preparedStatement.setDouble(4, selectedStudent.getPercentAttended());
+			preparedStatement.setString(5, level);
+			preparedStatement.setString(6, alteredCourseName);  
+			preparedStatement.setString(7, dropdown_section.getValue());
+			preparedStatement.setString(8, dropdown_term.getValue());
+			preparedStatement.setString(9, dropdown_year.getValue());
+			preparedStatement.setDate(10, new Date(new java.util.Date().getTime()));	
+			preparedStatement.executeUpdate(); 
+			
+			System.out.println("Records Inserted");
+			send_email.setText("EMAIL SENT");
+			send_email.setTextFill(Color.AQUAMARINE);
+			
+			
+
+			
+			
+			//RosterData.displayData(results);
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.err.println(e);
+		}finally{
+			if(results != null){
+				results.close();
+			}
+			if(stmt != null){
+				stmt.close();
+			}
+			if(conn != null){
+				conn.close();
+			}
+		}
+    	
+    	
     }
     
     
