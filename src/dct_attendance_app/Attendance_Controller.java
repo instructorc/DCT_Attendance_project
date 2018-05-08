@@ -105,6 +105,9 @@ public class Attendance_Controller {
 	
 	    @FXML
 	    private TableColumn<Attendance_Roster, Number> table_col_percentAttended_email;
+	    
+	    @FXML
+	    private TableColumn<Attendance_Roster, String> table_col_level_email;
 
     @FXML
     private TableView<Attendance_Roster> all_students_table;
@@ -153,7 +156,7 @@ public class Attendance_Controller {
 
     
     @FXML
-    void displayCourse(ActionEvent event) throws IOException {
+    void displayCourse(ActionEvent event) throws IOException, SQLException {
     	//Declaring variables
     	String name, hoursAttended, hoursMissed,percentAttended;
     	
@@ -161,6 +164,7 @@ public class Attendance_Controller {
     	ObservableList<Attendance_Roster> five_list = FXCollections.observableArrayList();
     	ObservableList<Attendance_Roster> ten_list = FXCollections.observableArrayList();
     	ObservableList<Attendance_Roster> fifteen_list = FXCollections.observableArrayList();
+    	ObservableList<Attendance_Roster> instance = FXCollections.observableArrayList();
     	
         // Initialize the Attendance Roster table 4 columns.
     	table_col_name.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
@@ -173,6 +177,7 @@ public class Attendance_Controller {
     	table_col_hoursAttended_email.setCellValueFactory(cellData -> cellData.getValue().hoursAttendedProperty());        
     	table_col_hoursMissed_email.setCellValueFactory(cellData -> cellData.getValue().hoursMissedProperty());
     	table_col_percentAttended_email.setCellValueFactory(cellData -> cellData.getValue().percentAttendedProperty());
+    	table_col_level_email.setCellValueFactory(cellData -> cellData.getValue().sentProperty());
     	
 		 // Initialize the five percent roster table 3 columns.
     	table_col_name_five.setCellValueFactory(cellData -> cellData.getValue().nameProperty());        
@@ -188,6 +193,8 @@ public class Attendance_Controller {
     	table_col_name_fifteen.setCellValueFactory(cellData -> cellData.getValue().nameProperty());        
     	table_col_hoursMissed_fifteen.setCellValueFactory(cellData -> cellData.getValue().hoursMissedProperty());
     	table_col_percentAttended_fifteen.setCellValueFactory(cellData -> cellData.getValue().percentAttendedProperty());
+    	
+    	
         
     	
     	alteredCourseName = dropdown_coursenames.getValue().substring(0, 8);
@@ -213,14 +220,14 @@ public class Attendance_Controller {
 				double percentStripped = Double.parseDouble(ap);
 	
 				if(percentStripped <= 84.00 ) {
-					fifteen_list.add(new Fifteen_Percent_Student(name,hoursAttended, hoursMissed, percentStripped));
+					fifteen_list.add(new Fifteen_Percent_Student(name,hoursAttended, hoursMissed, percentStripped, "fifteen_level"));
 			
 				}else if(percentStripped <= 89.00) {
-					ten_list.add(new Fifteen_Percent_Student(name,hoursAttended, hoursMissed, percentStripped));
+					ten_list.add(new Ten_Percent_Student(name,hoursAttended, hoursMissed, percentStripped, "ten_level" ));
 				}else if (percentStripped <= 94.00){
-					five_list.add(new Fifteen_Percent_Student(name,hoursAttended, hoursMissed, percentStripped));
+					five_list.add(new Five_Percent_Student(name,hoursAttended, hoursMissed, percentStripped, "five_level"));
 				}else {
-					studentList.add( new Attendance_Roster(name,hoursAttended, hoursMissed, percentStripped));
+					studentList.add( new Attendance_Roster(name,hoursAttended, hoursMissed, percentStripped, "good_standing"));
 				}
 			}
 
@@ -268,6 +275,57 @@ public class Attendance_Controller {
 	                System.out.println(fifteen_percent_table.getSelectionModel().getSelectedItem());
 	            }
 	        });
+	    	
+			String name2, hAttended, mHours, sLevel;
+			Double pAttended;
+	    	Connection conn1 = null;
+			ResultSet results1 = null;
+			Statement stmt2 = null;
+			
+			//PreparedStatement stmt2;
+			try {
+				conn1 = DriverManager.getConnection(CONN_STRING, USERNAME, PASSWORD);
+				System.out.println("Connected!");
+				
+				String sql_getAttendance_query = "SELECT studentName, hoursAttended, missedHours, percentAttended, sentLevel FROM ATTENDANCE_EMAILS WHERE courseName = ? AND courseSection = ? AND courseTerm = ? AND courseYear = ? ";
+				//String sql_getAttendance_query = "SELECT studentName, hoursAttended, missedHours, percentAttended, sentLevel FROM ATTENDANCE_EMAILS WHERE courseName = ?";		
+				
+				ResultSet rs = null;
+				PreparedStatement attendance_stmt = conn1.prepareStatement(sql_getAttendance_query);
+
+				attendance_stmt.setString(1,alteredCourseName);
+				attendance_stmt.setString(2, dropdown_section.getValue());
+				attendance_stmt.setString(3, dropdown_term.getValue());
+				attendance_stmt.setString(4, dropdown_year.getValue());
+				rs = attendance_stmt.executeQuery();
+		
+				while(rs.next()){
+					
+				    name = rs.getString(1); 
+					hAttended = rs.getString(2); 
+					mHours =rs.getString(3); 
+					pAttended = rs.getDouble(4); 
+					sLevel = rs.getString(5);
+					instance.add(new Attendance_Roster(name, hAttended, mHours, pAttended, sLevel));
+					System.out.println(name + hAttended + mHours + pAttended + sLevel);
+					
+				}
+				email_table.setItems(instance);
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				System.err.println(e);
+			}finally{
+				if(results1 != null){
+					results1.close();
+				}
+				if(stmt2 != null){
+					stmt2.close();
+				}
+				if(conn1 != null){
+					conn1.close();
+				}
+			}
 	        
     }
 
@@ -329,7 +387,7 @@ public class Attendance_Controller {
 	 * @throws SQLException 
 	 */
     @FXML
-    void sendEmail(ActionEvent event) throws SQLException {
+   void sendEmail(ActionEvent event) throws SQLException {
     	
     	String level;
     	Connection conn = null;
@@ -374,8 +432,7 @@ public class Attendance_Controller {
 			
 			System.out.println("Records Inserted");
 			send_email.setText("EMAIL SENT");
-			send_email.setTextFill(Color.AQUAMARINE);
-
+			
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

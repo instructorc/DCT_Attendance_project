@@ -106,10 +106,11 @@
       </Label>
       <TableView fx:id="email_table" layoutX="113.0" layoutY="551.0" prefHeight="169.0" prefWidth="608.0">
         <columns>
-          <TableColumn fx:id="table_col_name_email" prefWidth="240.0" text="Student" />
-          <TableColumn fx:id="table_col_hoursAttended_email" minWidth="0.0" prefWidth="140.0" text="Hours Attended" />
-            <TableColumn fx:id="table_col_hoursMissed_email" minWidth="0.0" prefWidth="107.0" text="Missed Hours" />
-            <TableColumn fx:id="table_col_percentAttended_email" minWidth="0.0" prefWidth="117.0" text="\% Attended" />
+          <TableColumn fx:id="table_col_name_email" prefWidth="218.0" text="Student" />
+          <TableColumn fx:id="table_col_hoursAttended_email" minWidth="0.0" prefWidth="106.0" text="Hours Attended" />
+            <TableColumn fx:id="table_col_hoursMissed_email" minWidth="0.0" prefWidth="102.0" text="Missed Hours" />
+            <TableColumn fx:id="table_col_percentAttended_email" minWidth="0.0" prefWidth="78.0" text="\% Attended" />
+            <TableColumn fx:id="table_col_level_email" minWidth="0.0" prefWidth="99.0" text="Level" />
         </columns>
       </TableView>
       <Label layoutX="116.0" layoutY="306.0" text="Students in good standing">

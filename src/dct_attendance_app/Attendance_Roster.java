@@ -17,17 +17,32 @@ public class Attendance_Roster {
     private final SimpleStringProperty hoursAttended;
     private final SimpleStringProperty hoursMissed;
     private final SimpleDoubleProperty percentAttended;
+    private final SimpleStringProperty sentLevel;
     //private final SimpleBooleanProperty isSent;
-    
-    Attendance_Roster(String name, String hoursAttended, String hoursMissed, Double percentAttended) {
+
+    public Attendance_Roster(String name, String hoursAttended, String hoursMissed, Double percentAttended, String sentLevel) {
         this.name = new SimpleStringProperty(name); 
         this.hoursAttended = new SimpleStringProperty(hoursAttended);
         this.hoursMissed = new SimpleStringProperty(hoursMissed);
         this.percentAttended = new SimpleDoubleProperty(percentAttended);
-        
-
-        
+        this.sentLevel = new SimpleStringProperty(sentLevel);
     }
+
+    
+    
+    public void setSentLevel(String sentL) {
+        sentLevel.set(sentL);
+    }
+
+    public String getSentLevel() {
+        return sentLevel.get();
+    }
+    
+    public StringProperty sentProperty() {
+        return sentLevel;
+    }
+    
+    
     
     public void setName(String studentName) {
         name.set(studentName);
